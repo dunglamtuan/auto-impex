@@ -67,3 +67,6 @@ def getTechnickeUdajeFromRpzv(vin:str):
 @app.route('/<vin>')
 def hello(vin:str):
     return Response(getTechnickeUdajeFromRpzv(vin), mimetype='text/xml')
+
+if __name__ == '__main__':
+    app.run()
