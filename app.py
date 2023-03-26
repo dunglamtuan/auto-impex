@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import Response
 import requests
+import re, json
 
 app = Flask(__name__)
 
@@ -54,8 +55,6 @@ def getTechnickeUdajeFromRpzv(vin:str):
    </soapenv:Body>
 </soapenv:Envelope>
     """
-    # with open('request.xml', 'rb') as f:
-    #   file_data = f.read()
 
     headers = {"Content-Type": "text/xml;charset=UTF-8", "SOAPAction": "http://tempuri.org/IRPZVStatistic/GetTechnickeUdajeVozidloPar"}
     response = requests.post(data=file_data, url="https://trpzv.iris.sk/WS_ZAPv2/RPZVStatistic.svc",  headers=headers, auth=('wsRPZVuser', 'wsRPZVuser123'))
@@ -63,10 +62,27 @@ def getTechnickeUdajeFromRpzv(vin:str):
     #print(type(file_data))
     return response.text
 
+def rpzvResultToModera(rpzvResult: str):
+
+    return json.dumps({
+        "color": re.findall("<Farba>(.*?)</Farba>", rpzvResult)[0],
+        "model": re.findall("<Model>(.*?)</Model>", rpzvResult)[0],
+        "fuel": re.findall("<Palivo.*>(.*?)</Palivo>", rpzvResult)[0],
+        "seats": re.findall("<PocetMiestSedenie>(.*?)</PocetMiestSedenie>", rpzvResult)[0],
+        "PrevodovkaPocetStupnov": re.findall("<PrevodovkaPocetStupnov>(.*?)</PrevodovkaPocetStupnov>", rpzvResult)[0],
+        "transmissionType": re.findall("<Prevodovka.*>(.*?)</Prevodovka>", rpzvResult)[0],
+        "maxPowerKw": re.findall("<VykonMotora.*>(.*?)</VykonMotora>", rpzvResult)[0],
+        "cylinderCapacityL": re.findall("<ZdvihovyObjem.*>(.*?)</ZdvihovyObjem>", rpzvResult)[0],
+        "make": re.findall("<Znacka.*>(.*?)</Znacka>", rpzvResult)[0],
+        "vinCode": re.findall("<VIN.*>(.*?)</VIN>", rpzvResult)[0],
+        "Karoseria":re.findall("<Karoseria.*>(.*?)</Karoseria>", rpzvResult)[0]
+    })
+
 
 @app.route('/<vin>')
 def hello(vin:str):
-    return Response(getTechnickeUdajeFromRpzv(vin), mimetype='text/xml')
+    rpzvResult = getTechnickeUdajeFromRpzv(vin)
+    return Response(rpzvResultToModera(rpzvResult), mimetype='application/json')
 
 if __name__ == '__main__':
     app.run()
