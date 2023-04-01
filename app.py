@@ -19,32 +19,34 @@ def getTechnickeUdajeFromRpzv(vin:str, ecv:str):
             <wcf:Kontrola>
                <!--Optional:-->
                <dat:DatumOdcitania>2023-01-03T00:00:00</dat:DatumOdcitania>
-                 <dat:SposobOdcitania>1</dat:SposobOdcitania>
-                
+           
+               <!--Optional:-->
+               <dat:MileAge>15235</dat:MileAge>
+       
+               <!--Optional:-->
+               <dat:SposobOdcitania>1</dat:SposobOdcitania>
                <!--Optional:-->
                <dat:UnitType>1</dat:UnitType>
                <!--Optional:-->
-               <wcf:MileAge>110829</wcf:MileAge>
                <dat:ZivotnaUdalost>DopravnaNehoda</dat:ZivotnaUdalost>
-               <!--Optional:-->
-                <dat:ICO>0012345678</dat:ICO>
-               </wcf:Kontrola>
+                   <!--Optional:-->
+               <dat:ICO>014236546</dat:ICO>
+        </wcf:Kontrola>
             <!--Optional:-->
             <wcf:Sender>
                <!--Optional:-->
-               <wcf:Name>test</wcf:Name>
+               <wcf:Name>aaaa</wcf:Name>
                <!--Optional:-->
                <wcf:OrganizacionName>auto-impextest</wcf:OrganizacionName>
                <!--Optional:-->
-               <wcf:TypPracoviska>Poistovna</wcf:TypPracoviska>
+               <wcf:TypPracoviska>Servis</wcf:TypPracoviska>
             </wcf:Sender>
             <!--Optional:-->
             <wcf:Vozidlo>
-               
-               <!--Optional:-->
-               <dat:VIN>{vin}</dat:VIN>
-               <dat:ECV>{ecv}</dat:ECV>
               
+               <dat:ECV>{ecv}</dat:ECV>
+               <dat:VIN>{vin}</dat:VIN>
+           
             </wcf:Vozidlo>
             <!--Optional:-->
             <wcf:WsPassword>6dfgeW+a</wcf:WsPassword>
@@ -94,7 +96,7 @@ def json_format(vin:str):
     '''json_format'''
 
     if len(vin) == 7:
-        rpzv_result = getTechnickeUdajeFromRpzv('', ecv = vin)
+        rpzv_result = getTechnickeUdajeFromRpzv('', ecv=vin)
     else :
         rpzv_result = getTechnickeUdajeFromRpzv(vin=vin, ecv='')
 
