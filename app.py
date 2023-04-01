@@ -6,7 +6,7 @@ import re, json
 app = Flask(__name__)
 
 
-def getTechnickeUdajeFromRpzv(vin:str):
+def getTechnickeUdajeFromRpzv(vin:str, ecv:str):
 
     file_data = f"""
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/" xmlns:wcf="http://schemas.datacontract.org/2004/07/WcfServiceRPZV" xmlns:dat="http://schemas.datacontract.org/2004/07/DataClass.AppCode">
@@ -43,7 +43,7 @@ def getTechnickeUdajeFromRpzv(vin:str):
                
                <!--Optional:-->
                <dat:VIN>{vin}</dat:VIN>
-               <!-- <dat:ECV>BT984EZ</dat:ECV> -->
+               <dat:ECV>{ecv}</dat:ECV>
               
             </wcf:Vozidlo>
             <!--Optional:-->
@@ -59,7 +59,6 @@ def getTechnickeUdajeFromRpzv(vin:str):
     headers = {"Content-Type": "text/xml;charset=UTF-8", "SOAPAction": "http://tempuri.org/IRPZVStatistic/GetTechnickeUdajeVozidloPar"}
     response = requests.post(data=file_data, url="https://trpzv.iris.sk/WS_ZAPv2/RPZVStatistic.svc",  headers=headers, auth=('wsRPZVuser', 'wsRPZVuser123'))
 
-    #print(type(file_data))
     return response.text
 
 def rpzvResultToModera(rpzvResult: str):
@@ -80,9 +79,26 @@ def rpzvResultToModera(rpzvResult: str):
 
 
 @app.route('/<vin>')
-def hello(vin:str):
-    rpzvResult = getTechnickeUdajeFromRpzv(vin)
-    return Response(rpzvResultToModera(rpzvResult), mimetype='application/json')
+def xml_format(vin:str):
+    '''xml_format'''
+
+    if len(vin) == 7:
+        rpzv_result = getTechnickeUdajeFromRpzv('', ecv = vin)
+    else :
+        rpzv_result = getTechnickeUdajeFromRpzv(vin=vin, ecv='')
+
+    return Response(rpzv_result, mimetype='text/xml')
+
+@app.route('/json/<vin>')
+def json_format(vin:str):
+    '''json_format'''
+
+    if len(vin) == 7:
+        rpzv_result = getTechnickeUdajeFromRpzv('', ecv = vin)
+    else :
+        rpzv_result = getTechnickeUdajeFromRpzv(vin=vin, ecv='')
+
+    return Response(rpzvResultToModera(rpzv_result), mimetype='application/json')
 
 if __name__ == '__main__':
     app.run()
