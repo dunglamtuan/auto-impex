@@ -91,7 +91,7 @@ def xml_format(vin:str):
 
     return Response(rpzv_result, mimetype='text/xml')
 
-@app.route('/json/<vin>')
+@app.route('/json/<vin>', methods=['POST'])
 def json_format(vin:str):
     '''json_format'''
 
